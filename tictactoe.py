@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+#replace client with bot if your commands.Bot variable is named bot
 class TicTacToe(commands.Cog):
 
 	def __init__(self, client):
@@ -13,6 +13,7 @@ class TicTacToe(commands.Cog):
 		opp = member
 		winner = None
 		player = ctx.author
+		#list of combinations
 		combinations = [['a1','a2','a3'],['b1','b2','b3'],['c1','c2','c3'],['a1','b1','c1'],['a2','b2','c2'],['a3','b3','c3'],['a1','b2','c3'],['a3','b2','c1']]
 		cr = '❌'
 		cl = '⭕'
@@ -24,6 +25,7 @@ class TicTacToe(commands.Cog):
 			tttstr += tdict[item]
 			if (tlist.index(item)+1) % 3 == 0:
 				tttstr += '\n'
+		#embed formation
 		embed = discord.Embed(title=f'TicTacToe | {player.name} vs {opp.name}',description=tttstr,color=discord.Color.orange())
 		embed.add_field(name='How to play?',value='The game works on a grid system. For example "a1" for the \ntop left corner and "c3" for the bottom right corner.')
 		await ctx.send(embed=embed)
@@ -37,6 +39,7 @@ class TicTacToe(commands.Cog):
 					return m.author == ctx.author and m.channel == ctx.channel
 			await ctx.send(f'{cr_player.mention}, enter your square below!')
 			msg2 = ''
+			#loop for square input
 			while msg2 not in tdict:
 				msg = await self.client.wait_for('message',check=check)
 				msg2 = msg.content
@@ -54,13 +57,14 @@ class TicTacToe(commands.Cog):
 				canbed = discord.Embed(title='Canceled',description=f'{cr_player.name} canceled the game :(',color=discord.Color.red())
 				await ctx.send(embed=canbed)
 				return
+			#changing of tdict according to the input
 			sq = msg.content.lower()
 			if tdict[sq] == bl:
 				if cr_player == member:
 					tdict[sq] = cr
 				else:
 					tdict[sq] = cl
-			
+			#formatting of tdict to the string
 			tttstr = ''
 			for item in tlist:
 				tttstr += tdict[item]
@@ -69,6 +73,7 @@ class TicTacToe(commands.Cog):
 			embed = discord.Embed(title=f'TicTacToe | {player.name} vs {opp.name}',description=tttstr,color=discord.Color.orange())
 			embed.set_footer(text='The game works on a grid system. For example "a1" for the \ntop left corner and "c3" for the bottom right corner.')
 			await ctx.send(embed=embed)
+			#game ending logic
 			for item in combinations:
 				if (tdict[item[0]] == cl and tdict[item[1]] == cl and tdict[item[2]] == cl) or (tdict[item[0]] == cr and tdict[item[1]] == cr and tdict[item[2]] == cr):
 					isFinished = True
@@ -79,10 +84,12 @@ class TicTacToe(commands.Cog):
 					allFilled = True
 					isFinished = True
 					break
+			#player switching
 			if cr_player == member:
 				cr_player = player 
 			else:
 				cr_player = member
+		#game end
 		if winner == None:
 			em2 = discord.Embed(title='No one won :(',description='No one won the tictactoe game!',color=discord.Color.red())
 		else:
